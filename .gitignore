@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+# dataset mentah tidak di-commit (unduh sesuai data/README.md)
+data/datasetUang/
+data/DATASET_UANG/
+data/rupiah-banknotes-dataset/
+results/screenshots/
