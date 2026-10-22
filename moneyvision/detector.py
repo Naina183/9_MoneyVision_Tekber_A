@@ -20,7 +20,7 @@ from dataclasses import dataclass
 import cv2
 import numpy as np
 
-from ..data.MoneyVision import config as C
+from . import config as C
 from .preprocessing import resize_to_width, warp_quad
 
 

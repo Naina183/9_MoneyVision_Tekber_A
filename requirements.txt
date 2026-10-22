@@ -1,0 +1,16 @@
+# Wajib
+opencv-python>=4.8
+numpy>=1.24
+pyttsx3>=2.90          # text-to-speech offline
+matplotlib>=3.7        # grafik pada evaluate.py
+
+# Opsional — suara Bahasa Indonesia yang lebih natural (butuh internet)
+# gTTS>=2.5
+# pygame>=2.5
+
+# Opsional — input harga dengan suara (butuh internet + mikrofon)
+# SpeechRecognition>=3.10
+# PyAudio>=0.2.13
+
+# Pengujian
+pytest>=7
