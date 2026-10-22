@@ -1,0 +1,13 @@
+[SUARA] Terdeteksi tiga lembar. Dua puluh ribu rupiah, lima puluh ribu rupiah, lima ribu rupiah. Total uang sekarang tujuh puluh lima ribu rupiah.
+[i] screenshot disimpan: results/demo_transaksi/1_pindai_bayar.jpg
+[SUARA] Masukkan harga dengan angka lalu tekan Enter, atau tekan V untuk input suara.
+[i] screenshot disimpan: results/demo_transaksi/2_input_harga.jpg
+[SUARA] Harga enam puluh ribu rupiah. Uang dibayar tujuh puluh lima ribu rupiah. Kembalian seharusnya lima belas ribu rupiah.
+[i] screenshot disimpan: results/demo_transaksi/3_harga_tersimpan.jpg
+[SUARA] Harga enam puluh ribu rupiah. Uang dibayar tujuh puluh lima ribu rupiah. Kembalian seharusnya lima belas ribu rupiah.
+[i] screenshot disimpan: results/demo_transaksi/4_umumkan_kembalian.jpg
+[SUARA] Mode cek kembalian. Pindai uang kembalian yang Anda terima. Kembalian seharusnya lima belas ribu rupiah.
+[i] screenshot disimpan: results/demo_transaksi/5_mode_cek_kembalian.jpg
+[SUARA] Terdeteksi dua lembar. Lima ribu rupiah, sepuluh ribu rupiah. Kembalian diterima sejauh ini lima belas ribu rupiah. Kembalian sesuai.
+[i] screenshot disimpan: results/demo_transaksi/6_pindai_kembalian.jpg
+Total dibayar Rp75000, harga Rp60000, kembalian seharusnya Rp15000, diterima Rp15000

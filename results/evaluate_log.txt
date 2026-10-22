@@ -1,0 +1,54 @@
+Referensi: 56 citra, 7 kelas, ORB 800 fitur
+
+[A] Dataset A: 644 citra non-referensi
+    50/644
+    100/644
+    150/644
+    200/644
+    250/644
+    300/644
+    350/644
+    400/644
+    450/644
+    500/644
+    550/644
+    600/644
+    selesai dalam 252 s
+
+[B] Dataset B: 120 foto (pipeline lengkap)
+
+[C] 100 scene sintetis multi-uang
+    20/100
+    40/100
+    60/100
+    80/100
+    100/100
+
+================ RINGKASAN ================
+
+Dataset A (scan)
+  ORB+warna (usulan)   akurasi  99.2%  salah   0.0%  ditolak   0.8%  (n=644)
+  ORB saja             akurasi  94.7%  salah   0.0%  ditolak   5.3%  (n=644)
+  Warna saja           akurasi  96.6%  salah   3.4%  ditolak   0.0%  (n=644)
+
+Dataset B (foto)
+  ORB+warna (usulan)   akurasi 100.0%  salah   0.0%  ditolak   0.0%  (n=105)
+  ORB saja             akurasi 100.0%  salah   0.0%  ditolak   0.0%  (n=105)
+  Warna saja           akurasi  94.3%  salah   4.8%  ditolak   0.9%  (n=105)
+
+Per kondisi (A, metode usulan):
+  normal  akurasi 100.0%  salah   0.0%  ditolak   0.0%  (n=84)
+  lusuh   akurasi 100.0%  salah   0.0%  ditolak   0.0%  (n=140)
+  kotor   akurasi  96.4%  salah   0.0%  ditolak   3.6%  (n=140)
+  sobek   akurasi 100.0%  salah   0.0%  ditolak   0.0%  (n=140)
+  buram   akurasi 100.0%  salah   0.0%  ditolak   0.0%  (n=140)
+
+Open-set Rp75.000: {'n': 15, 'ditolak': 15, 'salah_diterima': {}}
+Kontur Dataset B: {'n': 105, 'kontur': 104, 'fallback_full_frame': 1}
+
+Scene sintetis: 100 scene / 211 lembar
+  jumlah lembar tepat  88.0%  recall deteksi  93.4%  FP 0
+  dari 197 lembar terdeteksi: benar 187, salah 0, ditolak 10
+  akurasi per lembar  88.6%  total tepat  81.0%  MAE total Rp5970
+
+Waktu: 385.2 ms/lembar (A), 457.8 ms/foto (B), 909.5 ms/scene (C)

@@ -1,0 +1,546 @@
+{
+  "referensi": 56,
+  "orb_features": 800,
+  "parameter": {
+    "MIN_INLIERS": 14,
+    "MARGIN_RATIO": 1.5,
+    "LOWE_RATIO": 0.75,
+    "COLOR_WEIGHT": 0.25
+  },
+  "A": {
+    "ORB+warna (usulan)": {
+      "n": 644,
+      "benar": 639,
+      "salah": 0,
+      "ditolak": 5,
+      "akurasi": 0.9922,
+      "error": 0.0,
+      "tolak": 0.0078,
+      "presisi_diterima": 1.0,
+      "per_kondisi": {
+        "normal": {
+          "n": 84,
+          "benar": 84,
+          "salah": 0,
+          "ditolak": 0,
+          "akurasi": 1.0,
+          "error": 0.0,
+          "tolak": 0.0,
+          "presisi_diterima": 1.0
+        },
+        "lusuh": {
+          "n": 140,
+          "benar": 140,
+          "salah": 0,
+          "ditolak": 0,
+          "akurasi": 1.0,
+          "error": 0.0,
+          "tolak": 0.0,
+          "presisi_diterima": 1.0
+        },
+        "kotor": {
+          "n": 140,
+          "benar": 135,
+          "salah": 0,
+          "ditolak": 5,
+          "akurasi": 0.9643,
+          "error": 0.0,
+          "tolak": 0.0357,
+          "presisi_diterima": 1.0
+        },
+        "sobek": {
+          "n": 140,
+          "benar": 140,
+          "salah": 0,
+          "ditolak": 0,
+          "akurasi": 1.0,
+          "error": 0.0,
+          "tolak": 0.0,
+          "presisi_diterima": 1.0
+        },
+        "buram": {
+          "n": 140,
+          "benar": 140,
+          "salah": 0,
+          "ditolak": 0,
+          "akurasi": 1.0,
+          "error": 0.0,
+          "tolak": 0.0,
+          "presisi_diterima": 1.0
+        }
+      }
+    },
+    "ORB saja": {
+      "n": 644,
+      "benar": 610,
+      "salah": 0,
+      "ditolak": 34,
+      "akurasi": 0.9472,
+      "error": 0.0,
+      "tolak": 0.0528,
+      "presisi_diterima": 1.0,
+      "per_kondisi": {
+        "normal": {
+          "n": 84,
+          "benar": 84,
+          "salah": 0,
+          "ditolak": 0,
+          "akurasi": 1.0,
+          "error": 0.0,
+          "tolak": 0.0,
+          "presisi_diterima": 1.0
+        },
+        "lusuh": {
+          "n": 140,
+          "benar": 122,
+          "salah": 0,
+          "ditolak": 18,
+          "akurasi": 0.8714,
+          "error": 0.0,
+          "tolak": 0.1286,
+          "presisi_diterima": 1.0
+        },
+        "kotor": {
+          "n": 140,
+          "benar": 130,
+          "salah": 0,
+          "ditolak": 10,
+          "akurasi": 0.9286,
+          "error": 0.0,
+          "tolak": 0.0714,
+          "presisi_diterima": 1.0
+        },
+        "sobek": {
+          "n": 140,
+          "benar": 139,
+          "salah": 0,
+          "ditolak": 1,
+          "akurasi": 0.9929,
+          "error": 0.0,
+          "tolak": 0.0071,
+          "presisi_diterima": 1.0
+        },
+        "buram": {
+          "n": 140,
+          "benar": 135,
+          "salah": 0,
+          "ditolak": 5,
+          "akurasi": 0.9643,
+          "error": 0.0,
+          "tolak": 0.0357,
+          "presisi_diterima": 1.0
+        }
+      }
+    },
+    "Warna saja": {
+      "n": 644,
+      "benar": 622,
+      "salah": 22,
+      "ditolak": 0,
+      "akurasi": 0.9658,
+      "error": 0.0342,
+      "tolak": 0.0,
+      "presisi_diterima": 0.9658,
+      "per_kondisi": {
+        "normal": {
+          "n": 84,
+          "benar": 84,
+          "salah": 0,
+          "ditolak": 0,
+          "akurasi": 1.0,
+          "error": 0.0,
+          "tolak": 0.0,
+          "presisi_diterima": 1.0
+        },
+        "lusuh": {
+          "n": 140,
+          "benar": 140,
+          "salah": 0,
+          "ditolak": 0,
+          "akurasi": 1.0,
+          "error": 0.0,
+          "tolak": 0.0,
+          "presisi_diterima": 1.0
+        },
+        "kotor": {
+          "n": 140,
+          "benar": 119,
+          "salah": 21,
+          "ditolak": 0,
+          "akurasi": 0.85,
+          "error": 0.15,
+          "tolak": 0.0,
+          "presisi_diterima": 0.85
+        },
+        "sobek": {
+          "n": 140,
+          "benar": 140,
+          "salah": 0,
+          "ditolak": 0,
+          "akurasi": 1.0,
+          "error": 0.0,
+          "tolak": 0.0,
+          "presisi_diterima": 1.0
+        },
+        "buram": {
+          "n": 140,
+          "benar": 139,
+          "salah": 1,
+          "ditolak": 0,
+          "akurasi": 0.9929,
+          "error": 0.0071,
+          "tolak": 0.0,
+          "presisi_diterima": 0.9929
+        }
+      }
+    },
+    "confusion": {
+      "labels": [
+        1000,
+        2000,
+        5000,
+        10000,
+        20000,
+        50000,
+        100000
+      ],
+      "cols": [
+        1000,
+        2000,
+        5000,
+        10000,
+        20000,
+        50000,
+        100000,
+        0
+      ],
+      "matrix": [
+        [
+          92,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          89,
+          0,
+          0,
+          0,
+          0,
+          0,
+          3
+        ],
+        [
+          0,
+          0,
+          91,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          92,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          91,
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          92,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          92,
+          0
+        ]
+      ]
+    },
+    "ms_per_lembar": 385.2
+  },
+  "B": {
+    "ORB+warna (usulan)": {
+      "n": 105,
+      "benar": 105,
+      "salah": 0,
+      "ditolak": 0,
+      "akurasi": 1.0,
+      "error": 0.0,
+      "tolak": 0.0,
+      "presisi_diterima": 1.0
+    },
+    "ORB saja": {
+      "n": 105,
+      "benar": 105,
+      "salah": 0,
+      "ditolak": 0,
+      "akurasi": 1.0,
+      "error": 0.0,
+      "tolak": 0.0,
+      "presisi_diterima": 1.0
+    },
+    "Warna saja": {
+      "n": 105,
+      "benar": 99,
+      "salah": 5,
+      "ditolak": 1,
+      "akurasi": 0.9429,
+      "error": 0.0476,
+      "tolak": 0.0095,
+      "presisi_diterima": 0.9519
+    },
+    "open_set_75rb": {
+      "n": 15,
+      "ditolak": 15,
+      "salah_diterima": {}
+    },
+    "kontur_terdeteksi": {
+      "n": 105,
+      "kontur": 104,
+      "fallback_full_frame": 1
+    },
+    "ms_per_foto": 457.8,
+    "confusion": {
+      "labels": [
+        1000,
+        2000,
+        5000,
+        10000,
+        20000,
+        50000,
+        100000
+      ],
+      "cols": [
+        1000,
+        2000,
+        5000,
+        10000,
+        20000,
+        50000,
+        100000,
+        0
+      ],
+      "matrix": [
+        [
+          15,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          15,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          15,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          15,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          15,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          15,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          15,
+          0
+        ]
+      ]
+    }
+  },
+  "C": {
+    "scene": 100,
+    "lembar": 211,
+    "jumlah_lembar_tepat": 0.88,
+    "recall_deteksi": 0.9336,
+    "false_positive": 0,
+    "akurasi_per_lembar": 0.8863,
+    "lembar_terdeteksi": 197,
+    "terdeteksi_benar": 187,
+    "terdeteksi_salah": 0,
+    "terdeteksi_ditolak": 10,
+    "total_tepat": 0.81,
+    "mae_total": 5970.0,
+    "ms_per_scene": 909.5,
+    "per_latar": {
+      "kertas_putih": {
+        "scene": 25,
+        "lembar": 50,
+        "terdeteksi": 42,
+        "benar": 37,
+        "jumlah_lembar_tepat": 0.68,
+        "total_tepat": 0.6
+      },
+      "meja_gelap": {
+        "scene": 25,
+        "lembar": 53,
+        "terdeteksi": 53,
+        "benar": 53,
+        "jumlah_lembar_tepat": 1.0,
+        "total_tepat": 1.0
+      },
+      "kayu": {
+        "scene": 25,
+        "lembar": 61,
+        "terdeteksi": 59,
+        "benar": 57,
+        "jumlah_lembar_tepat": 0.96,
+        "total_tepat": 0.88
+      },
+      "kain": {
+        "scene": 25,
+        "lembar": 47,
+        "terdeteksi": 43,
+        "benar": 40,
+        "jumlah_lembar_tepat": 0.88,
+        "total_tepat": 0.76
+      }
+    }
+  },
+  "D": {
+    "n": 105,
+    "per_kelas": 15,
+    "seed": 0,
+    "benar": 38,
+    "salah": 1,
+    "ganda": 1,
+    "ditolak": 25,
+    "tidak_terdeteksi": 40,
+    "akurasi": 0.3619,
+    "per_nominal": {
+      "1000": {
+        "benar": 3,
+        "salah": 0,
+        "ganda": 1,
+        "ditolak": 2,
+        "tidak_terdeteksi": 9
+      },
+      "2000": {
+        "benar": 6,
+        "salah": 1,
+        "ganda": 0,
+        "ditolak": 2,
+        "tidak_terdeteksi": 6
+      },
+      "5000": {
+        "benar": 9,
+        "salah": 0,
+        "ganda": 0,
+        "ditolak": 2,
+        "tidak_terdeteksi": 4
+      },
+      "10000": {
+        "benar": 6,
+        "salah": 0,
+        "ganda": 0,
+        "ditolak": 1,
+        "tidak_terdeteksi": 8
+      },
+      "20000": {
+        "benar": 6,
+        "salah": 0,
+        "ganda": 0,
+        "ditolak": 4,
+        "tidak_terdeteksi": 5
+      },
+      "50000": {
+        "benar": 3,
+        "salah": 0,
+        "ganda": 0,
+        "ditolak": 8,
+        "tidak_terdeteksi": 4
+      },
+      "100000": {
+        "benar": 5,
+        "salah": 0,
+        "ganda": 0,
+        "ditolak": 6,
+        "tidak_terdeteksi": 4
+      }
+    },
+    "kasus_salah": [
+      [
+        "idr_2000/IMG_20240527_123852.jpg",
+        "10000"
+      ]
+    ],
+    "ms_per_foto": 478
+  }
+}
