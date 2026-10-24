@@ -182,8 +182,8 @@ class MoneyVisionApp:
                 self.say("Mode bayar.")
         elif ch == "u":
             undone = self.session.undo()
-            self.say("Pindaian terakhir dibatalkan. " if undone else "Tidak ada pindaian untuk dibatalkan. ")
-            self.status += f" Total {format_rupiah(self.session.total_paid)}"
+            self.say(("Pindaian terakhir dibatalkan. " if undone else "Tidak ada pindaian untuk dibatalkan. ")
+                     + f"Total uang sekarang {rupiah_words(self.session.total_paid)}.")
         elif ch == "r":
             self.session.reset()
             self.last_results = []

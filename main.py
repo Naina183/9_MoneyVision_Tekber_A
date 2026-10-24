@@ -38,7 +38,9 @@ def run_image(app: MoneyVisionApp, path: str, price: int | None, show: bool, sav
         sys.exit(f"Gagal membaca gambar: {path}")
     results = app.scan(frame)
     if price:
+        scan_msg = app.last_msg  # simpan agar nominal terdeteksi tetap disuarakan
         app.set_price(price)
+        app.say(f"{scan_msg} {msg_change(app.session)}")
     print(f"\nHasil ({app.last_ms:.0f} ms):")
     for i, r in enumerate(results, 1):
         p = r.pred

@@ -1,0 +1,1 @@
+"""MoneyVision — pengenal nominal uang kertas rupiah dengan umpan balik suara."""

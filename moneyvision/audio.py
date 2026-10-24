@@ -27,11 +27,18 @@ class Speaker:
     def _pilih_backend(backend):
         if backend != "auto":
             return backend
-        # jika auto: gunakan pyttsx3 bila sudah terinstall, jika belum hanya tampil teks
+        # jika auto: pyttsx3 dulu, lalu gtts, jika keduanya belum terinstall hanya tampil teks
         try:
             import pyttsx3  # hanya untuk mengecek apakah sudah terinstall
             return "pyttsx3"
         except Exception:
+            pass
+        try:
+            import gtts  # noqa: F401
+            return "gtts"
+        except Exception:
+            print("[!] pyttsx3/gtts belum terinstall -> TIDAK ADA SUARA. "
+                  "Jalankan: pip install pyttsx3  (atau pip install gtts pygame)")
             return "none"
 
     def say(self, text, interrupt=True):
@@ -50,6 +57,9 @@ class Speaker:
 
     def close(self):
         self._q.put(None)  # None sebagai tanda untuk menghentikan thread
+        # tunggu suara terakhir selesai dibacakan, kalau tidak terpotong saat program keluar
+        if self.backend != "none":
+            self._thread.join(timeout=15)
 
     def _worker(self):
         if self.backend == "pyttsx3":
