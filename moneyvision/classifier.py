@@ -88,6 +88,29 @@ class NoteClassifier:
         cv2.normalize(h, h, alpha=1.0, norm_type=cv2.NORM_L1)
         return h.flatten().astype(np.float32)
 
+    @staticmethod
+    def _augment(img: np.ndarray) -> list[tuple[np.ndarray, str]]:
+        """Buat variasi citra referensi untuk menangani uang lusuh/kusut."""
+        augs = []
+        # 1. Blur ringan (simulasi uang kusut/tidak fokus)
+        blurred = cv2.GaussianBlur(img, (5, 5), 1.5)
+        augs.append((blurred, "blur"))
+        # 2. Brightness rendah (pencahayaan kurang)
+        dark = cv2.convertScaleAbs(img, alpha=0.7, beta=-15)
+        augs.append((dark, "dark"))
+        # 3. Brightness tinggi (cahaya berlebih)
+        bright = cv2.convertScaleAbs(img, alpha=1.3, beta=25)
+        augs.append((bright, "bright"))
+        # 4. Kontras rendah (uang pudar/lusuh)
+        faded = cv2.convertScaleAbs(img, alpha=0.8, beta=30)
+        augs.append((faded, "faded"))
+        # 5. Noise (simulasi kamera murah / kondisi buruk)
+        noisy = img.copy().astype(np.float32)
+        noise = np.random.normal(0, 12, noisy.shape).astype(np.float32)
+        noisy = np.clip(noisy + noise, 0, 255).astype(np.uint8)
+        augs.append((noisy, "noisy"))
+        return augs
+
     def _load(self, ref_dir: str) -> None:
         if not os.path.isdir(ref_dir):
             return
@@ -101,11 +124,20 @@ class NoteClassifier:
                 img = cv2.imread(os.path.join(path, fn))
                 if img is None:
                     continue
+                # referensi asli
                 pts, des, size = self.extract(img)
                 if des is None or len(des) < 10:
                     continue
                 self.refs.append(_Ref(int(sub), f"{sub}/{fn}", pts, des,
                                       self.color_hist(img), size))
+                # referensi augmentasi (uang lusuh/kondisi buruk)
+                for aug_img, aug_tag in self._augment(img):
+                    a_pts, a_des, a_size = self.extract(aug_img)
+                    if a_des is None or len(a_des) < 10:
+                        continue
+                    self.refs.append(_Ref(int(sub), f"{sub}/{fn}_{aug_tag}",
+                                          a_pts, a_des,
+                                          self.color_hist(aug_img), a_size))
 
     # ------------------------------------------------------------ pencocokan
     def _inliers(self, q_pts, q_des, ref: _Ref) -> int:

@@ -11,21 +11,21 @@ CANON_H = 300
 
 # ---------------------------------------------------------------- deteksi kontur
 WORK_WIDTH = 960          # frame diperkecil ke lebar ini sebelum deteksi kontur
-MIN_AREA_FRAC = 0.015     # luas kontur minimal (fraksi luas frame)
+MIN_AREA_FRAC = 0.010     # luas kontur minimal (fraksi luas frame, diturunkan)
 MAX_AREA_FRAC = 0.97      # luas kontur maksimal (hindari tepi frame)
 ASPECT_MIN = 1.45         # rasio sisi panjang/pendek minimum (toleransi uang terlipat/sobek)
 ASPECT_MAX = 2.90         # rasio maksimum
 MIN_SOLIDITY = 0.72       # luas kontur / luas kotak minAreaRect
-BG_DIST_THRESH = 28       # jarak warna Lab minimum dari latar agar dianggap objek
+BG_DIST_THRESH = 22       # jarak warna Lab minimum dari latar agar dianggap objek (diturunkan)
 
 # ------------------------------------------------------------------- klasifikasi
-ORB_FEATURES = 800        # jumlah keypoint ORB per citra (diturunkan dari 1200 demi kecepatan)
-LOWE_RATIO = 0.75         # ambang ratio test Lowe
-RANSAC_REPROJ = 6.0       # ambang reprojeksi RANSAC (piksel)
-MIN_INLIERS = 14          # inlier minimum agar hasil ORB dianggap meyakinkan
-MARGIN_RATIO = 1.5        # inlier kelas terbaik harus >= 1,5x kelas kedua
-COLOR_MIN_SIM = 0.65      # kemiripan histogram warna minimum untuk fallback warna
-COLOR_MARGIN = 0.10       # selisih minimum kemiripan warna kelas 1 vs kelas 2
+ORB_FEATURES = 1200       # jumlah keypoint ORB per citra (dinaikkan untuk uang lusuh)
+LOWE_RATIO = 0.78         # ambang ratio test Lowe (dilonggarkan untuk toleransi uang kusut)
+RANSAC_REPROJ = 8.0       # ambang reprojeksi RANSAC (piksel, dilonggarkan)
+MIN_INLIERS = 10          # inlier minimum agar hasil ORB dianggap meyakinkan (diturunkan)
+MARGIN_RATIO = 1.35       # inlier kelas terbaik harus >= 1,35x kelas kedua (diturunkan)
+COLOR_MIN_SIM = 0.55      # kemiripan histogram warna minimum untuk fallback warna (diturunkan)
+COLOR_MARGIN = 0.08       # selisih minimum kemiripan warna kelas 1 vs kelas 2
                           # (dinaikkan dari 0,55/0,05: versi awal salah menerima uang
                           #  Rp75.000 sebagai Rp100.000 karena warnanya mirip)
 COLOR_WEIGHT = 0.25       # bobot skor warna pada skor gabungan
