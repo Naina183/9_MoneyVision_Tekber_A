@@ -31,30 +31,39 @@ app = Flask(__name__)
 clf: NoteClassifier | None = None
 speaker: Speaker | None = None
 camera: cv2.VideoCapture | None = None
-lock = threading.Lock()
+
+lock = threading.Lock()          # melindungi latest_frame
+scan_lock = threading.Lock()     # satu scan pada satu waktu (ORB tidak thread-safe)
 latest_frame: np.ndarray | None = None
+frame_seq = 0                    # nomor urut frame (untuk deteksi frame baru)
 
 # auto-scan state
 auto_scan_enabled = True
-_stable_count = 0          # berapa frame uang sudah diam
 _armed = True              # siap scan (reset setelah uang diangkat)
+_scanning = False          # True selama scan berjalan di thread latar
 _last_scan_t = 0.0         # waktu scan terakhir
 _last_results: list[NoteResult] = []
+_live_dets: list[Detection] = []   # kontur terbaru untuk overlay
 _status_msg = "Arahkan uang ke kamera. Scan otomatis aktif."
 _last_spoken = ""          # nominal terakhir yang diucapkan
-STABLE_FRAMES = 15         # frame stabil sebelum auto-scan
+STABLE_SEC = 0.6           # uang harus diam selama ini sebelum auto-scan
+MOVE_PX = 25               # gerak pusat uang (px) yang masih dianggap diam
 COOLDOWN_SEC = 2.0         # jeda minimum antar scan
+DETECT_FPS = 8             # kontur live dihitung segini kali per detik
+STREAM_FPS = 25            # frame MJPEG dikirim segini kali per detik
+STREAM_WIDTH = 960         # lebar frame yang dikirim ke browser
 
 
 def _analyze(frame: np.ndarray) -> tuple[list[NoteResult], float]:
     """Deteksi + klasifikasi semua uang di frame."""
     t0 = time.perf_counter()
     results = []
-    for det in detect_notes(frame):
-        pred = clf.classify(det.note, full_frame=det.full_frame)
-        if det.full_frame and not pred.known:
-            continue
-        results.append(NoteResult(det, pred))
+    with scan_lock:
+        for det in detect_notes(frame):
+            pred = clf.classify(det.note, full_frame=det.full_frame)
+            if det.full_frame and not pred.known:
+                continue
+            results.append(NoteResult(det, pred))
     return results, (time.perf_counter() - t0) * 1000
 
 
@@ -91,10 +100,9 @@ def _announce(results: list[NoteResult]) -> str:
     return ". ".join(display_parts) + "."
 
 
-def gen_frames():
-    """Generator MJPEG: kirim frame webcam + overlay hasil."""
-    global latest_frame, _stable_count, _armed, _last_scan_t, _last_results, _status_msg, _last_spoken
-
+def _camera_loop():
+    """Thread 1: baca webcam terus-menerus, simpan frame terakhir saja."""
+    global latest_frame, frame_seq
     while True:
         if camera is None or not camera.isOpened():
             time.sleep(0.1)
@@ -103,46 +111,92 @@ def gen_frames():
         if not ok:
             time.sleep(0.05)
             continue
-
         with lock:
-            latest_frame = frame.copy()
+            latest_frame = frame
+            frame_seq += 1
 
-        # deteksi kontur (tanpa klasifikasi — ringan)
-        dets = detect_notes(frame, allow_full_frame=False)
-        real_dets = [d for d in dets if not d.full_frame]
-        show_results = (time.time() - _last_scan_t) < 4.0
 
-        # --- auto-scan logic ---
-        if auto_scan_enabled:
-            if not real_dets:
-                # uang tidak ada → reset, siap scan lagi
-                _stable_count = 0
-                _armed = True
-                _last_spoken = ""
-            else:
-                _stable_count += 1
-                now = time.time()
-                if (_armed
-                        and _stable_count >= STABLE_FRAMES
-                        and (now - _last_scan_t) > COOLDOWN_SEC):
-                    # uang diam cukup lama → scan
-                    results, ms = _analyze(frame)
-                    _last_results = results
-                    _last_scan_t = now
-                    _status_msg = _announce(results)
-                    _armed = False  # tunggu uang diangkat dulu
+def _get_frame() -> tuple[int, np.ndarray | None]:
+    with lock:
+        return frame_seq, latest_frame
 
-        # --- render overlay ---
-        out = frame.copy()
-        if _last_results and show_results:
-            out = draw_results(out, _last_results)
-        elif real_dets:
-            out = draw_contours(out, dets)
 
-        _, buf = cv2.imencode('.jpg', out, [cv2.IMWRITE_JPEG_QUALITY, 80])
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + buf.tobytes() + b'\r\n')
-        time.sleep(0.03)
+def _scan_worker(frame: np.ndarray):
+    """Scan berat (klasifikasi) di thread sendiri supaya video tidak membeku."""
+    global _last_results, _last_scan_t, _status_msg, _scanning
+    try:
+        results, _ = _analyze(frame)
+        _last_results = results
+        _last_scan_t = time.time()
+        _status_msg = _announce(results)
+    finally:
+        _scanning = False
+
+
+def _detect_loop():
+    """Thread 2: deteksi kontur ringan + logika auto-scan (~DETECT_FPS kali/detik)."""
+    global _live_dets, _armed, _scanning, _last_spoken
+    stable_since = None
+    last_center = None
+    last_id = None
+    while True:
+        time.sleep(1.0 / DETECT_FPS)
+        seq, frame = _get_frame()
+        if frame is None or seq == last_id:
+            continue
+        last_id = seq
+
+        dets = [d for d in detect_notes(frame, allow_full_frame=False) if not d.full_frame]
+        _live_dets = dets
+
+        if not auto_scan_enabled:
+            continue
+        if not dets:
+            # uang tidak ada -> reset, siap scan lagi
+            stable_since, last_center = None, None
+            _armed = True
+            _last_spoken = ""
+            continue
+
+        center = np.mean([d.quad.mean(axis=0) for d in dets], axis=0)
+        now = time.time()
+        if last_center is None or np.linalg.norm(center - last_center) > MOVE_PX:
+            stable_since = now          # masih bergerak -> mulai hitung ulang
+        last_center = center
+
+        if (_armed and not _scanning
+                and now - stable_since >= STABLE_SEC
+                and now - _last_scan_t > COOLDOWN_SEC):
+            _armed = False              # tunggu uang diangkat dulu
+            _scanning = True
+            threading.Thread(target=_scan_worker, args=(frame.copy(),), daemon=True).start()
+
+
+def gen_frames():
+    """Generator MJPEG: hanya ambil frame terbaru + gambar overlay + encode. Ringan."""
+    last_id = None
+    while True:
+        seq, frame = _get_frame()
+        if frame is None or seq == last_id:
+            time.sleep(0.01)
+            continue
+        last_id = seq
+
+        out = frame
+        if _last_results and (time.time() - _last_scan_t) < 4.0:
+            out = draw_results(frame, _last_results)
+        elif _live_dets:
+            out = draw_contours(frame, _live_dets)
+
+        if out.shape[1] > STREAM_WIDTH:
+            h = int(out.shape[0] * STREAM_WIDTH / out.shape[1])
+            out = cv2.resize(out, (STREAM_WIDTH, h), interpolation=cv2.INTER_AREA)
+
+        ok, buf = cv2.imencode('.jpg', out, [cv2.IMWRITE_JPEG_QUALITY, 70])
+        if ok:
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + buf.tobytes() + b'\r\n')
+        time.sleep(1.0 / STREAM_FPS)
 
 
 # --- routes ---
@@ -161,8 +215,7 @@ def video_feed():
 def api_scan():
     """Pindai frame terakhir secara manual."""
     global _last_results, _last_scan_t, _status_msg, _armed
-    with lock:
-        frame = latest_frame
+    _, frame = _get_frame()
     if frame is None:
         return jsonify(status="error", message="Kamera belum siap.")
 
@@ -249,7 +302,7 @@ def _format_notes(results: list[NoteResult]) -> list[dict]:
 
 
 def main():
-    global clf, speaker, camera, auto_scan_enabled
+    global clf, speaker, camera
 
     ap = argparse.ArgumentParser(description="MoneyVision Web UI")
     ap.add_argument("--camera", type=int, default=0, help="indeks webcam (default 0)")
@@ -264,9 +317,14 @@ def main():
           + ", ".join(format_rupiah(c) for c in clf.classes))
     speaker = Speaker(args.tts)
 
-    camera = cv2.VideoCapture(args.camera)
+    # CAP_DSHOW jauh lebih cepat dibuka di Windows; MJPG membuat webcam USB bisa
+    # 30 fps di 720p (format default YUY2 sering mentok ~10 fps = terlihat lag).
+    backend = cv2.CAP_DSHOW if os.name == "nt" else cv2.CAP_ANY
+    camera = cv2.VideoCapture(args.camera, backend)
+    camera.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
     camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
     camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+    camera.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
     if not camera.isOpened():
         print("[!] Gagal membuka kamera. Pastikan webcam terhubung.")
@@ -275,6 +333,9 @@ def main():
     print(f"\n  MoneyVision siap di http://localhost:{args.port}")
     print(f"  Auto-scan: AKTIF (scan otomatis saat uang diam di depan kamera)\n")
     speaker.say("MoneyVision siap. Arahkan uang ke kamera.")
+
+    threading.Thread(target=_camera_loop, daemon=True).start()
+    threading.Thread(target=_detect_loop, daemon=True).start()
 
     try:
         app.run(host='0.0.0.0', port=args.port, debug=False, threaded=True)

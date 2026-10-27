@@ -49,6 +49,7 @@ class _Ref:
     des: np.ndarray       # descriptor ORB (N, 32)
     hist: np.ndarray      # histogram warna
     size: tuple           # (w, h) citra referensi
+    aug: bool = False     # True = hasil augmentasi (dipakai di tahap 2 saja)
 
 
 class NoteClassifier:
@@ -137,7 +138,7 @@ class NoteClassifier:
                         continue
                     self.refs.append(_Ref(int(sub), f"{sub}/{fn}_{aug_tag}",
                                           a_pts, a_des,
-                                          self.color_hist(aug_img), a_size))
+                                          self.color_hist(aug_img), a_size, aug=True))
 
     # ------------------------------------------------------------ pencocokan
     def _inliers(self, q_pts, q_des, ref: _Ref) -> int:
@@ -180,8 +181,40 @@ class NoteClassifier:
 
     # ------------------------------------------------------------ keputusan
     def classify(self, note_bgr: np.ndarray, full_frame: bool = False) -> Prediction:
-        inl, csim, best_ref = self.scores(note_bgr, full_frame)
+        """Klasifikasi dua tahap supaya cepat (dipakai aplikasi live).
+
+        Tahap 1 hanya mencocokkan ke referensi ASLI. Kalau pemenangnya sudah
+        jelas (metode 'orb'), langsung selesai. Kalau belum yakin, tahap 2
+        menambahkan referensi augmentasi (uang lusuh/gelap/noise).
+        Untuk evaluasi penuh tanpa tahap, pakai scores() + decide().
+        """
+        inl = {c: 0 for c in self.classes}
+        best_ref = {c: "" for c in self.classes}
+        q_pts = q_des = None
+        if self.use_orb:
+            q_pts, q_des, _ = self.extract(note_bgr, full_frame)
+            self._accumulate(q_pts, q_des, [r for r in self.refs if not r.aug], inl, best_ref)
+        csim = self._color_scores(note_bgr, full_frame)
+        pred = self.decide(inl, csim, best_ref, full_frame)
+        if not self.use_orb or pred.method == "orb":
+            return pred
+        self._accumulate(q_pts, q_des, [r for r in self.refs if r.aug], inl, best_ref)
         return self.decide(inl, csim, best_ref, full_frame)
+
+    def _accumulate(self, q_pts, q_des, refs, inl, best_ref) -> None:
+        for ref in refs:
+            n = self._inliers(q_pts, q_des, ref)
+            if n > inl[ref.denom]:
+                inl[ref.denom], best_ref[ref.denom] = n, ref.name
+
+    def _color_scores(self, note_bgr: np.ndarray, full_frame: bool) -> dict:
+        csim = {c: 0.0 for c in self.classes}
+        if self.use_color and not full_frame:
+            qh = self.color_hist(note_bgr)
+            for ref in self.refs:
+                d = cv2.compareHist(qh, ref.hist, cv2.HISTCMP_BHATTACHARYYA)
+                csim[ref.denom] = max(csim[ref.denom], 1.0 - float(d))
+        return csim
 
     def decide(self, inl: dict, csim: dict, best_ref: dict | None = None,
                full_frame: bool = False, use_orb: bool | None = None,
